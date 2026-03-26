@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ADMIN - NEXA</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<header><h1>PANNEAU ADMIN NEXA</h1></header>
+<div class="container" id="admin-zone" style="display:none;">
+    <div id="liste" class="grid"></div>
+</div>
+
+<script>
+    const pass = prompt("Code Administrateur :");
+    
+    if(pass === "Babsy2026") {
+        document.getElementById("admin-zone").style.display = "block";
+
+        // Ta configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
+            authDomain: "nexa-immobilier-site.firebaseapp.com",
+            projectId: "nexa-immobilier-site",
+            storageBucket: "nexa-immobilier-site.firebasestorage.app",
+            messagingSenderId: "564601467900",
+            appId: "1:564601467900:web:a252fb5a85db328c99b879"
+        };
+
+        // Initialisation correcte
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Chargement des annonces (toutes, pour pouvoir les valider)
+        db.collection("annonces").onSnapshot(snap => {
+            const list = document.getElementById("liste");
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="card" style="background:white; color:black; border: 2px solid var(--bleu-nexa);">
+                        <div class="card-content">
+                            <h3 style="color:var(--bleu-nexa)">${d.titre}</h3>
+                            <p><b>📞 Vendeur:</b> <span style="color:blue">${d.contact_vendeur}</span></p>
+                            <p><b>Prix:</b> ${d.prix} FCFA</p>
+                            <p><b>Description:</b> ${d.description}</p>
+                            <p><b>Statut actuel:</b> ${d.statut}</p>
+                            <hr>
+                            <button onclick="upd('${doc.id}', '${d.statut == 'valide' ? 'en_attente' : 'valide'}')" 
+                                    style="padding:10px; cursor:pointer; background:${d.statut == 'valide' ? 'orange' : 'green'}; color:white; border:none; border-radius:5px; width:100%;">
+                                ${d.statut == 'valide' ? '🔴 Retirer du site' : '🟢 Valider (Mettre en ligne)'}
+                            </button>
+                            <br><br>
+                            <button onclick="del('${doc.id}')" 
+                                    style="padding:10px; cursor:pointer; background:red; color:white; border:none; border-radius:5px; width:100%;">
+                                🗑️ Supprimer l'annonce
+                            </button>
+                        </div>
+                    </div>`;
+            });
+        });
+    } else { 
+        alert("Code incorrect !");
+        window.location.href = "index.html"; 
+    }
+
+    // Fonctions de mise à jour et suppression
+    function upd(id, s) { 
+        firebase.firestore().collection("annonces").doc(id).update({statut: s})
+        .then(() => console.log("Statut mis à jour !"))
+        .catch(err => alert("Erreur: " + err));
+    }
+    
+    function del(id) { 
+        if(confirm("Voulez-vous vraiment supprimer définitivement cette annonce ?")) {
+            firebase.firestore().collection("annonces").doc(id).delete();
+        } 
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendre - NEXA IMMOBILIER</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>NEXA IMMOBILIER</h1>
+    <nav><a href="index.html">Retour à l'accueil</a></nav>
+</header>
+
+<div class="container">
+    <div id="form-container">
+        <form id="formVendeur">
+            <h2 style="color: var(--bleu-nexa)">Déposer votre annonce</h2>
+            <label>Titre de l'annonce</label>
+            <input type="text" id="titre" placeholder="ex: Terrain 500m² à Zatta" required>
+            
+            <label>Description (Sans numéro de téléphone)</label>
+            <textarea id="desc" placeholder="Détails du bien (maison, terrain, véhicule...)" rows="5" required></textarea>
+            
+            <label>Prix (FCFA)</label>
+            <input type="number" id="prix" required>
+            
+            <label>Votre Contact WhatsApp (Masqué au public)</label>
+            <input type="text" id="vendeur_contact" placeholder="Pour que Babsy vous contacte" required>
+
+            <button type="submit" id="submitBtn" class="btn-contact">Soumettre pour validation</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Ta configuration Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
+        authDomain: "nexa-immobilier-site.firebaseapp.com",
+        projectId: "nexa-immobilier-site",
+        storageBucket: "nexa-immobilier-site.firebasestorage.app",
+        messagingSenderId: "564601467900",
+        appId: "1:564601467900:web:a252fb5a85db328c99b879"
+    };
+
+    // Initialisation
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById("formVendeur").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById("submitBtn");
+        const description = document.getElementById("desc").value;
+
+        // Sécurité anti-numéro (détecte 8 chiffres ou plus)
+        if (/\d{8,}/.test(description)) {
+            alert("⚠️ Sécurité NEXA : Veuillez retirer votre numéro de téléphone de la description. Babsy s'occupe de l'intermédiation.");
+            return;
+        }
+
+        // Désactiver le bouton pendant l'envoi
+        btn.disabled = true;
+        btn.innerText = "Envoi en cours...";
+
+        db.collection("annonces").add({
+            titre: document.getElementById("titre").value,
+            description: description,
+            prix: document.getElementById("prix").value,
+            contact_vendeur: document.getElementById("vendeur_contact").value,
+            statut: "en_attente",
+            date: new Date().toISOString()
+        }).then(() => {
+            document.getElementById("form-container").innerHTML = `
+                <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid var(--or-nexa);">
+                    <h1 style="color:green;">✅ Félicitations !</h1>
+                    <p>Votre annonce a été reçue avec succès.</p>
+                    <p><b>Babsy</b> va vérifier les détails avant la mise en ligne.</p>
+                    <br><a href="index.html" class="btn-contact" style="text-decoration:none; display:inline-block;">Retour à l'accueil</a>
+                </div>`;
+        }).catch((error) => {
+            alert("Erreur lors de l'envoi : " + error.message);
+            btn.disabled = false;
+            btn.innerText = "Soumettre pour validation";
+        });
+    });
+</script>
+</body>
+</html>

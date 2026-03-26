@@ -1,0 +1,82 @@
+/* style.css */
+:root {
+    --bleu-nexa: #0A2472;
+    --beige-nexa: #F0E6A2;
+    --or-nexa: #d4af37;
+    --blanc: #ffffff;
+    --noir: #1a1a1a;
+}
+
+body {
+    background-color: var(--beige-nexa);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    color: var(--noir);
+}
+
+header {
+    background-color: var(--bleu-nexa);
+    color: var(--blanc);
+    padding: 25px 10px;
+    text-align: center;
+    border-bottom: 5px solid var(--or-nexa);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+header h1 { margin: 0; letter-spacing: 2px; font-size: 2.2em; }
+header p { margin: 5px 0 15px; font-weight: 300; font-style: italic; }
+
+nav a {
+    color: var(--or-nexa);
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 15px;
+    border: 1px solid var(--or-nexa);
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+nav a:hover { background: var(--or-nexa); color: var(--bleu-nexa); }
+
+.container { padding: 30px; max-width: 1200px; margin: auto; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: var(--bleu-nexa);
+    color: var(--blanc);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    border: 2px solid var(--or-nexa);
+}
+
+.card:hover { transform: translateY(-10px); }
+.card img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
+.card-content { padding: 20px; }
+.card-content h3 { margin: 0 0 10px; color: var(--or-nexa); }
+.card-content .price { font-size: 1.4em; font-weight: bold; margin-bottom: 15px; }
+
+.btn-contact {
+    background-color: var(--or-nexa);
+    color: var(--bleu-nexa);
+    border: none;
+    padding: 15px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    text-transform: uppercase;
+    font-size: 1em;
+}
+
+form { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+form input, form textarea {
+    width: 100%; padding: 12px; margin: 10px 0 20px;
+    border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+}
