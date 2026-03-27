@@ -11,9 +11,17 @@
 <body>
 
 <header>
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo Nexa Immobilier" style="max-width: 150px; margin-bottom: 10px;">
+    </div>
+
     <h1>NEXA IMMOBILIER</h1>
     <p>RÊVEZ GRAND, INVESTISSEZ MALIN</p>
-    <nav><a href="depot.html">Vendre un bien</a></nav>
+    
+    <nav>
+        <a href="depot.html" class="btn-nav">Vendre un bien</a>
+        <a href="admin.html" class="btn-nav admin-btn" style="background-color: #ffc107; color: #003366; margin-left: 10px; font-weight: bold;">Espace Admin</a>
+    </nav>
 </header>
 
 <div class="container">
@@ -23,7 +31,7 @@
 </div>
 
 <script>
-  // Configuration Firebase (Tes clés sont correctes !)
+  // Configuration Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
     authDomain: "nexa-immobilier-site.firebaseapp.com",
@@ -33,7 +41,7 @@
     appId: "1:564601467900:web:a252fb5a85db328c99b879"
   };
 
-  // INITIALISATION (Version Compat - sans les 'import')
+  // INITIALISATION
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
@@ -60,7 +68,7 @@
 
   // FONCTION WHATSAPP
   function contactAdmin(titre) {
-      const monWhatsApp = "2250151288644"; // N'oublie pas de mettre TON VRAI NUMÉRO ici
+      const monWhatsApp = "2250151288644"; 
       const msg = encodeURIComponent("Bonjour Babsy, je suis intéressé par l'annonce : " + titre);
       window.open(`https://wa.me/${monWhatsApp}?text=${msg}`);
   }
