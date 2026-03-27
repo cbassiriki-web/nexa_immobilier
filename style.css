@@ -8,7 +8,11 @@
 }
 
 body {
-    background-color: var(--beige-nexa);
+    /* L'image est centrée, fixe et couvre tout l'écran */
+    /* Remplace 'background.jpg' par le nom exact de ton fichier image */
+    background: linear-gradient(rgba(240, 230, 162, 0.7), rgba(240, 230, 162, 0.7)), 
+                url('image1.jpeg') no-repeat center center fixed;
+    background-size: cover;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     color: var(--noir);
@@ -23,23 +27,49 @@ header {
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
+/* Style pour le logo */
+.logo-container img {
+    display: block;
+    margin: 0 auto 15px;
+    max-width: 150px;
+    height: auto;
+}
+
 header h1 { margin: 0; letter-spacing: 2px; font-size: 2.2em; }
 header p { margin: 5px 0 15px; font-weight: 300; font-style: italic; }
+
+nav {
+    margin-top: 15px;
+}
 
 nav a {
     color: var(--or-nexa);
     text-decoration: none;
     font-weight: bold;
-    margin: 0 15px;
-    border: 1px solid var(--or-nexa);
-    padding: 8px 15px;
+    margin: 0 10px;
+    border: 2px solid var(--or-nexa);
+    padding: 10px 20px;
     border-radius: 5px;
     transition: 0.3s;
+    display: inline-block;
 }
 
-nav a:hover { background: var(--or-nexa); color: var(--bleu-nexa); }
+nav a:hover { 
+    background: var(--or-nexa); 
+    color: var(--bleu-nexa); 
+}
 
-.container { padding: 30px; max-width: 1200px; margin: auto; }
+/* Style spécifique pour le bouton Admin pour le différencier */
+.admin-btn {
+    background-color: var(--or-nexa);
+    color: var(--bleu-nexa) !important;
+}
+
+.container { 
+    padding: 30px; 
+    max-width: 1200px; 
+    margin: auto; 
+}
 
 .grid {
     display: grid;
@@ -54,6 +84,7 @@ nav a:hover { background: var(--or-nexa); color: var(--bleu-nexa); }
     overflow: hidden;
     transition: transform 0.3s;
     border: 2px solid var(--or-nexa);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* Plus d'ombre pour ressortir du fond */
 }
 
 .card:hover { transform: translateY(-10px); }
@@ -75,7 +106,13 @@ nav a:hover { background: var(--or-nexa); color: var(--bleu-nexa); }
     font-size: 1em;
 }
 
-form { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+form { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 10px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+}
+
 form input, form textarea {
     width: 100%; padding: 12px; margin: 10px 0 20px;
     border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
