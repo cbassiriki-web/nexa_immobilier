@@ -3,35 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXA IMMOBILIER - Administration</title>
+    <title>NEXA IMMOBILIER - Administration Sécurisée</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <style>
+        /* Style de la page de login */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #003366; color: white; display: flex;
+            flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .login-box { background: white; padding: 30px; border-radius: 10px; color: #333; width: 300px; text-align: center; }
+        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 10px; background: #ffc107; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+
+        /* Style de la liste admin */
         .admin-card { border: 1px solid #ccc; margin: 10px; padding: 15px; display: flex; align-items: center; gap: 20px; background: #f9f9f9; border-radius: 8px; }
         .admin-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; }
-        .status-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; }
+        .status-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8em; }
         .status-valide { background: #c8e6c9; color: #2e7d32; }
         .status-attente { background: #fff9c4; color: #f9a825; }
-        .btn-valider { background: #2e7d32; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
-        .btn-supprimer { background: #d32f2f; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
+        .btn-valider { background: #2e7d32; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; margin-right: 5px; }
+        .btn-supprimer { background: #d32f2f; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 5px; }
+        #admin-content { display: none; } /* Caché par défaut */
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Espace Administration</h1>
-    <p>Gestion des annonces Nexa Immobilier</p>
-    <nav><a href="index.html" class="btn-nav">Retour au site</a></nav>
-</header>
+<div id="login-screen">
+    <div class="login-box">
+        <img src="logo.png" alt="Logo" style="max-width: 100px; margin-bottom: 10px;">
+        <h3>Accès Admin</h3>
+        <input type="text" id="admin-user" placeholder="Identifiant">
+        <input type="password" id="admin-pass" placeholder="Mot de passe">
+        <button onclick="verifierLogin()">Se connecter</button>
+        <p id="login-error" style="color: red; font-size: 0.8em; margin-top: 10px; display: none;">Accès refusé</p>
+    </div>
+</div>
 
-<div class="container">
-    <h2>Toutes les annonces</h2>
-    <div id="admin-list">
-        </div>
+<div id="admin-content">
+    <header>
+        <h1>Espace Administration</h1>
+        <p>Bienvenue Babsy</p>
+        <nav><a href="index.html" class="btn-nav">Retour au site</a></nav>
+    </header>
+
+    <div class="container">
+        <h2>Gestion des annonces</h2>
+        <div id="admin-list">
+            </div>
+    </div>
 </div>
 
 <script>
+  // Tes accès personnalisés (Change-les ici !)
+  const MON_IDENTIFIANT = "BabsyAdmin"; 
+  const MON_MOT_DE_PASSE = "Babsycoul0833"; 
+
+  // Configuration Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
     authDomain: "nexa-immobilier-acd8f.firebaseapp.com",
@@ -44,50 +74,60 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Afficher toutes les annonces
-  db.collection("annonces").orderBy("date", "desc").onSnapshot((snapshot) => {
-      const list = document.getElementById("admin-list");
-      list.innerHTML = "";
+  // Fonction de vérification
+  function verifierLogin() {
+      const user = document.getElementById('admin-user').value;
+      const pass = document.getElementById('admin-pass').value;
 
-      snapshot.forEach((doc) => {
-          const data = doc.data();
-          const id = doc.id;
-          const isValide = data.statut === "valide";
-          const photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/100';
-
-          list.innerHTML += `
-              <div class="admin-card">
-                  <img src="${photo}" alt="Aperçu">
-                  <div style="flex-grow: 1;">
-                      <strong>${data.titre}</strong><br>
-                      <small>${data.prix} FCFA</small><br>
-                      <span class="status-badge ${isValide ? 'status-valide' : 'status-attente'}">
-                          ${isValide ? 'Publié' : 'En attente'}
-                      </span>
-                  </div>
-                  <div>
-                      ${!isValide ? `<button class="btn-valider" onclick="validerAnnonce('${id}')">Valider</button>` : ''}
-                      <button class="btn-supprimer" onclick="supprimerAnnonce('${id}')">Supprimer</button>
-                  </div>
-              </div>`;
-      });
-  });
-
-  // Fonction pour valider
-  function validerAnnonce(id) {
-      if(confirm("Publier cette annonce sur le site ?")) {
-          db.collection("annonces").doc(id).update({ statut: "valide" })
-          .then(() => alert("Annonce publiée !"))
-          .catch(err => console.error(err));
+      if(user === MON_IDENTIFIANT && pass === MON_MOT_DE_PASSE) {
+          document.getElementById('login-screen').style.display = 'none';
+          document.getElementById('admin-content').style.display = 'block';
+          chargerAnnonces(); // On lance le chargement seulement si connecté
+      } else {
+          document.getElementById('login-error').style.display = 'block';
       }
   }
 
-  // Fonction pour supprimer
+  // Fonction pour charger les annonces
+  function chargerAnnonces() {
+      db.collection("annonces").orderBy("date", "desc").onSnapshot((snapshot) => {
+          const list = document.getElementById("admin-list");
+          list.innerHTML = "";
+
+          snapshot.forEach((doc) => {
+              const data = doc.data();
+              const id = doc.id;
+              const isValide = data.statut === "valide";
+              const photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/100';
+
+              list.innerHTML += `
+                  <div class="admin-card">
+                      <img src="${photo}" alt="Aperçu">
+                      <div style="flex-grow: 1;">
+                          <strong>${data.titre}</strong><br>
+                          <small>${data.prix} FCFA</small><br>
+                          <span class="status-badge ${isValide ? 'status-valide' : 'status-attente'}">
+                              ${isValide ? 'En ligne' : 'En attente de validation'}
+                          </span>
+                      </div>
+                      <div>
+                          ${!isValide ? `<button class="btn-valider" onclick="validerAnnonce('${id}')">Valider</button>` : ''}
+                          <button class="btn-supprimer" onclick="supprimerAnnonce('${id}')">Supprimer</button>
+                      </div>
+                  </div>`;
+          });
+      });
+  }
+
+  function validerAnnonce(id) {
+      if(confirm("Valider cette annonce pour Nexa Immobilier ?")) {
+          db.collection("annonces").doc(id).update({ statut: "valide" });
+      }
+  }
+
   function supprimerAnnonce(id) {
-      if(confirm("Supprimer définitivement cette annonce ?")) {
-          db.collection("annonces").doc(id).delete()
-          .then(() => alert("Annonce supprimée !"))
-          .catch(err => console.error(err));
+      if(confirm("Voulez-vous vraiment supprimer cette annonce ?")) {
+          db.collection("annonces").doc(id).delete();
       }
   }
 </script>
