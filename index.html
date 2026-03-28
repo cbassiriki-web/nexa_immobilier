@@ -31,12 +31,12 @@
 </div>
 
 <script>
-  // Configuration Firebase
+  // Configuration Firebase (Vérifiez bien que le projectId correspond à votre console)
   const firebaseConfig = {
     apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
-    authDomain: "nexa-immobilier-site.firebaseapp.com",
-    projectId: "nexa-immobilier-site",
-    storageBucket: "nexa-immobilier-site.firebasestorage.app",
+    authDomain: "nexa-immobilier-acd8f.firebaseapp.com",
+    projectId: "nexa-immobilier-acd8f", // Corrigé selon votre capture
+    storageBucket: "nexa-immobilier-acd8f.firebasestorage.app",
     messagingSenderId: "564601467900",
     appId: "1:564601467900:web:a252fb5a85db328c99b879"
   };
@@ -51,9 +51,15 @@
       grid.innerHTML = "";
       snapshot.forEach((doc) => {
           const data = doc.data();
+          
+          // On récupère la première image du tableau 'images' s'il existe
+          const premiereImage = (data.images && data.images.length > 0) 
+                                ? data.images[0] 
+                                : 'https://via.placeholder.com/400x250?text=Nexa+Immo';
+
           grid.innerHTML += `
               <div class="card">
-                  <img src="${data.imageUrl || 'https://via.placeholder.com/400x250?text=Nexa+Immo'}" alt="Nexa Immo">
+                  <img src="${premiereImage}" alt="Nexa Immo" style="width:100%; height:200px; object-fit:cover;">
                   <div class="card-content">
                       <h3>${data.titre}</h3>
                       <div class="price">${data.prix} FCFA</div>
