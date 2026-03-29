@@ -30,6 +30,16 @@
         </div>
 </div>
 
+    <footer style="background-color: #2c3e50; color: white; padding: 20px 0; text-align: center; margin-top: 50px;">
+    <div class="footer-content">
+        <p><strong>Nexa Immobilier</strong> - Votre partenaire commercial en promotion immobilière ou multisectoriel à Yamoussoukro</p>
+        <p style="font-size: 0.9em;">
+            &copy; <span id="currentYear"></span> Tous droits réservés. 
+            | <a href="mentions.html" style="color: #3498db; text-decoration: none;">Mentions Légales & Confidentialité</a>
+        </p>
+    </div>
+</footer>
+    
 <script>
   // CONFIGURATION MISE À JOUR (Projet : nexa-immobilier-acd8f)
   const firebaseConfig = {
@@ -84,6 +94,9 @@
       const msg = encodeURIComponent("Bonjour Babsy, je suis intéressé par l'annonce : " + titre);
       window.open(`https://wa.me/${monWhatsApp}?text=${msg}`);
   }
+
+    // Script pour mettre à jour l'année automatiquement
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
 </script>
 
 <style>
