@@ -38,6 +38,12 @@
             | <a href="mentions.html" style="color: #3498db; text-decoration: none;">Mentions Légales & Confidentialité</a>
         </p>
     </div>
+<div id="welcome-avatar" style="position: fixed; bottom: 20px; right: 20px; width: 200px; z-index: 1000; cursor: pointer;">
+    <video id="avatarVideo" width="100%" style="border-radius: 50%; border: 3px solid #003366; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <source src="pub.mp4" type="video/mp4">
+    </video>
+    <div id="play-hint" style="background: #003366; color: white; padding: 5px; border-radius: 5px; font-size: 10px; text-align: center;">Cliquez pour m'écouter</div>
+</div>
 </footer>
     
 <script>
@@ -97,6 +103,21 @@
 
     // Script pour mettre à jour l'année automatiquement
     document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+    const video = document.getElementById('avatarVideo');
+    const hint = document.getElementById('play-hint');
+
+    // On vérifie que les éléments existent avant d'ajouter l'écouteur
+    if (video && hint) {
+        video.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                hint.style.display = 'none'; // Cache le texte "Cliquez pour m'écouter"
+            } else {
+                video.pause();
+            }
+        });
+    }
 </script>
 
 <style>
