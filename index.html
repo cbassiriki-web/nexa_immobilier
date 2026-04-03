@@ -44,6 +44,15 @@
     <p>&copy; <span id="currentYear"></span> Tous droits réservés.</p>
 </footer>
 
+<div id="welcome-avatar" style="position: fixed; bottom: 20px; right: 20px; width: 140px; z-index: 9999; cursor: pointer;">
+    <video id="avatarVideo" width="100%" style="border-radius: 50%; border: 3px solid #003366; box-shadow: 0 4px 15px rgba(0,0,0,0.3); background: white;" muted playsinline autoplay loop>
+        <source src="pub.mp4" type="video/mp4">
+    </video>
+    <div id="play-hint" style="background: #003366; color: white; padding: 5px; border-radius: 5px; font-size: 10px; text-align: center; margin-top: 5px; font-family: sans-serif;">
+        Cliquez pour le son
+    </div>
+</div>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
@@ -111,6 +120,32 @@
       window.open(`https://wa.me/2250151288644?text=${encodeURIComponent("Bonjour Babsy, je suis intéressé par : " + titre)}`);
   }
   document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+   window.addEventListener('load', () => {
+    const v = document.getElementById('avatarVideo');
+    const h = document.getElementById('play-hint');
+
+    if (v) {
+        // Tentative de lecture auto
+        v.play().catch(() => {
+            console.log("Lecture auto en attente d'interaction");
+        });
+
+        // Gestion du clic pour le son
+        v.addEventListener('click', () => {
+            if (v.muted) {
+                v.muted = false;
+                v.currentTime = 0; 
+                v.play();
+                h.style.display = 'none';
+            } else {
+                v.muted = true;
+                h.style.display = 'block';
+                h.innerText = "Son coupé";
+            }
+        });
+    }
+});
 </script>
 
 <style>
