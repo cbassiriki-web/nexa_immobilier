@@ -13,54 +13,54 @@
         <img src="logo.png" alt="Logo Nexa Immobilier" style="max-width: 120px; margin-bottom: 10px;">
     </div>
     <h1>NEXA IMMOBILIER</h1>
-    <nav><a href="index.html">Retour à l'accueil</a></nav>
+    <nav><a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">← Retour à l'accueil</a></nav>
 </header>
 
 <div class="container">
-    <div id="form-container">
-        <form id="formVendeur">
-            <h2 style="color: #003366">Déposer votre annonce</h2>
+    <div id="form-container" style="max-width: 600px; margin: 20px auto; padding: 20px;">
+        <form id="formVendeur" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <h2 style="color: #003366; text-align: center; margin-bottom: 20px;">Déposer votre annonce</h2>
             
-            <label>Titre de l'annonce</label>
-            <input type="text" id="titre" placeholder="ex: Terrain 500m² à Zatta" required>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Titre de l'annonce</label>
+            <input type="text" id="titre" placeholder="ex: Terrain 500m² à Zatta" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
             
-            <label>Description (Sans numéro de téléphone)</label>
-            <textarea id="desc" placeholder="Détails du bien (maison, terrain, véhicule...)" rows="5" required></textarea>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description (Sans numéro de téléphone)</label>
+            <textarea id="desc" placeholder="Détails du bien (maison, terrain, véhicule...)" rows="5" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required></textarea>
             
-            <label>Prix (FCFA)</label>
-            <input type="number" id="prix" required>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Prix (FCFA)</label>
+            <input type="number" id="prix" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
 
-            <label>Joindre des images ou vidéos (Max 3)</label>
-            <input type="file" id="fichiers" accept="image/*,video/*" multiple style="margin-bottom: 20px; border: 1px dashed #003366; padding: 10px; width: 100%;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Joindre des images (Max 3)</label>
+            <input type="file" id="fichiers" accept="image/*" multiple style="margin-bottom: 20px; border: 1px dashed #003366; padding: 15px; width: 100%; box-sizing: border-box;">
             
-            <label style="font-weight: bold; color: #003366;">Vous êtes :</label>
+            <label style="font-weight: bold; color: #003366; display: block; margin-bottom: 5px;">Vous êtes :</label>
             <select id="statut_publieur" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; background: white; margin-bottom: 20px;" required>
                 <option value="" disabled selected>Choisissez votre statut...</option>
                 <option value="Propriétaire">Propriétaire (C'est mon terrain)</option>
                 <option value="Démarcheur">Démarcheur (Intermédiaire)</option>
             </select>
 
-            <label>Votre Contact WhatsApp (Masqué au public)</label>
-            <input type="text" id="vendeur_contact" placeholder="Pour que Babsy vous contacte" required>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Votre Contact WhatsApp (Masqué au public)</label>
+            <input type="text" id="vendeur_contact" placeholder="Pour que Babsy vous contacte" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
 
-            <button type="submit" id="submitBtn" class="btn-contact" style="background: #003366; color: white; padding: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">Soumettre pour validation</button>
+            <button type="submit" id="submitBtn" style="background: #003366; color: white; padding: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.1em;">Soumettre pour validation</button>
         </form>
     </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+  // --- CONFIGURATION CORRIGÉE (Identique à index.html) ---
   const firebaseConfig = {
-    apiKey: "AIzaSyDY92WJbHCJ4P50orqd59tXJ5CuvZhLCIk",
+    apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
     authDomain: "nexa-immobilier-acd8f.firebaseapp.com",
     projectId: "nexa-immobilier-acd8f",
     storageBucket: "nexa-immobilier-acd8f.firebasestorage.app",
-    messagingSenderId: "429960511942",
-    appId: "1:429960511942:web:1e8b5c3b0331163f13f2c7",
-    measurementId: "G-86LFE1EG8S"
+    messagingSenderId: "564601467900",
+    appId: "1:564601467900:web:a252fb5a85db328c99b879"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -78,22 +78,23 @@
       const statutPublieur = document.getElementById("statut_publieur").value;
       const fichiers = document.getElementById("fichiers").files;
 
-      // 1. Sécurité anti-numéro
+      // 1. Sécurité anti-numéro (Vérifie s'il y a 8 chiffres ou plus)
       if (/\d{8,}/.test(description)) {
-          alert("⚠️ Sécurité NEXA : Veuillez retirer votre numéro de téléphone de la description.");
+          alert("⚠️ Sécurité NEXA : Veuillez retirer votre numéro de téléphone de la description pour protéger votre vie privée.");
           return;
       }
 
-      // 2. Bloquer le bouton
+      // 2. Bloquer le bouton pour éviter les doubles envois
       btn.disabled = true;
-      btn.innerText = "Téléchargement des médias...";
+      btn.innerText = "Traitement en cours...";
 
       let urlsMedias = [];
 
       try {
-          // 3. Upload des images seulement s'il y en a
+          // 3. Upload des images
           if (fichiers.length > 0) {
-              for (let i = 0; i < fichiers.length; i++) {
+              btn.innerText = "Téléchargement des images...";
+              for (let i = 0; i < Math.min(fichiers.length, 3); i++) {
                   const file = fichiers[i];
                   const storageRef = ref(storage, 'annonces/' + Date.now() + "_" + file.name);
                   const snapshot = await uploadBytes(storageRef, file);
@@ -102,9 +103,9 @@
               }
           }
 
-          btn.innerText = "Enregistrement de l'annonce...";
+          btn.innerText = "Publication finale...";
 
-          // 4. Envoi final à Firestore
+          // 4. Envoi à la collection "annonces"
           await addDoc(collection(db, "annonces"), {
               titre: titre,
               description: description,
@@ -114,20 +115,20 @@
               images: urlsMedias,
               statut: "en_attente",
               vendu: false,
-              date: new Date().toISOString()
+              date: serverTimestamp() // Utilise l'heure du serveur pour plus de précision
           });
 
           // 5. Message de succès
           document.getElementById("form-container").innerHTML = `
-              <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid #ffc107;">
-                  <h1 style="color:green;">✅ Reçu !</h1>
-                  <p>Votre annonce est en cours de validation par Babsy.</p>
-                  <br><a href="index.html" style="background:#003366; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">Retour à l'accueil</a>
+              <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid #28a745;">
+                  <h1 style="color:#28a745;">✅ Reçu !</h1>
+                  <p>Félicitations Babsy, l'annonce a été transmise. Elle sera visible sur le site après validation.</p>
+                  <br><a href="index.html" style="background:#003366; color:white; padding:12px 25px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block; margin-top:10px;">Retour à l'accueil</a>
               </div>`;
 
       } catch (error) {
           console.error("Erreur détaillée:", error);
-          alert("Désolé Babsy, il y a une erreur : " + error.message);
+          alert("Erreur lors de l'envoi. Vérifie ta connexion.");
           btn.disabled = false;
           btn.innerText = "Soumettre pour validation";
       }
