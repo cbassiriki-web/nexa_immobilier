@@ -28,8 +28,7 @@
 
     <section style="margin-top: 50px; border-top: 2px solid #eee; padding-top: 30px;">
         <h2 style="text-align:center; color: #003366;">Témoignages de nos clients</h2>
-        <div id="avis-container" style="display: flex; gap: 20px; overflow-x: auto; padding: 20px 0;">
-            </div>
+        <div id="avis-container" style="display: flex; gap: 20px; overflow-x: auto; padding: 20px 0;"></div>
 
         <div style="max-width: 500px; margin: 30px auto; padding: 20px; background: #f9f9f9; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
             <h3 style="color: #003366;">Laissez-nous votre avis</h3>
@@ -45,13 +44,6 @@
     <p>&copy; <span id="currentYear"></span> Tous droits réservés.</p>
 </footer>
 
-<div id="welcome-avatar" style="position: fixed; bottom: 20px; right: 20px; width: 150px; z-index: 1000; cursor: pointer;">
-    <video id="avatarVideo" width="100%" style="border-radius: 50%; border: 3px solid #003366; background: white;">
-        <source src="pub.mp4" type="video/mp4">
-    </video>
-    <div id="play-hint" style="background: #003366; color: white; padding: 5px; border-radius: 5px; font-size: 10px; text-align: center; margin-top: 5px;">Cliquez pour m'écouter</div>
-</div>
-
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
@@ -65,13 +57,15 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // CHARGEMENT DES ANNONCES
+  // CHARGEMENT DES ANNONCES (Correction Description ici)
   db.collection("annonces").where("statut", "==", "valide").onSnapshot((snapshot) => {
       const grid = document.getElementById("annonces-grid");
       grid.innerHTML = "";
       snapshot.forEach((doc) => {
           const data = doc.data();
           const estVendu = data.vendu === true;
+          // Sécurité : récupère 'description' ou 'desc'
+          const texteDescription = data.description || data.desc || "Consultez-nous pour plus de détails sur cette offre.";
           let photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/400x250';
 
           grid.innerHTML += `
@@ -81,11 +75,11 @@
                       <img src="${photo}" alt="${data.titre}" style="width: 100%; height: 100%; object-fit: cover; ${estVendu ? 'filter: grayscale(1);' : ''}">
                   </div>
                   <div class="card-content">
-                      <h3 style="color: #003366;">${data.titre}</h3>
-                      <div style="color: #d32f2f; font-weight: bold;">${data.prix} FCFA</div>
-                      <p style="font-size: 0.85em;">${data.description}</p>
+                      <h3 style="color: #003366; margin-bottom: 5px;">${data.titre}</h3>
+                      <div style="color: #d32f2f; font-weight: bold; font-size: 1.1em; margin-bottom: 10px;">${data.prix} FCFA</div>
+                      <p style="font-size: 0.9em; color: #555; line-height: 1.4; margin-bottom: 15px;">${texteDescription}</p>
                       <button onclick="${estVendu ? '' : `contactAdmin('${data.titre}')`}" 
-                              style="background-color: ${estVendu ? '#777' : '#003366'}; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: ${estVendu ? 'default' : 'pointer'};"
+                              style="background-color: ${estVendu ? '#777' : '#003366'}; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: ${estVendu ? 'default' : 'pointer'}; font-weight: bold;"
                               ${estVendu ? 'disabled' : ''}>
                           ${estVendu ? 'Bien Vendu' : 'Contacter NEXA'}
                       </button>
@@ -94,7 +88,7 @@
       });
   });
 
-  // GESTION DES AVIS
+  // AVIS
   function envoyerAvis() {
       const nom = document.getElementById('avis-nom').value;
       const msg = document.getElementById('avis-message').value;
@@ -109,11 +103,7 @@
       container.innerHTML = "";
       snapshot.forEach((doc) => {
           const avis = doc.data();
-          container.innerHTML += `
-              <div style="min-width: 250px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #003366;">
-                  <p style="font-style: italic;">"${avis.message}"</p>
-                  <p style="font-weight: bold; color: #003366; margin-top: 10px;">- ${avis.nom}</p>
-              </div>`;
+          container.innerHTML += `<div style="min-width: 250px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #003366;"><p style="font-style: italic;">"${avis.message}"</p><p style="font-weight: bold; color: #003366; margin-top: 10px;">- ${avis.nom}</p></div>`;
       });
   });
 
@@ -124,9 +114,10 @@
 </script>
 
 <style>
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
-  .card { border: 1px solid #ddd; border-radius: 8px; background: #fff; transition: 0.3s; }
-  .card-content { padding: 15px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; padding: 20px; }
+  .card { border: 1px solid #ddd; border-radius: 10px; background: #fff; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+  .card-content { padding: 20px; }
 </style>
 </body>
 </html>
