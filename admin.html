@@ -8,15 +8,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <style>
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #003366; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-box { background: white; padding: 30px; border-radius: 10px; width: 300px; text-align: center; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        .admin-card { border: 1px solid #ccc; margin: 10px 0; padding: 15px; display: flex; align-items: center; gap: 20px; background: #f9f9f9; border-radius: 8px; }
-        .admin-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; }
-        .btn-valider { background: #2e7d32; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 5px; }
-        .btn-vendu { background: #003366; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 5px; }
-        .btn-supprimer { background: #d32f2f; color: white; border: none; padding: 8px; cursor: pointer; border-radius: 5px; }
-        #admin-content { display: none; padding: 20px; }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #003366; display: flex; align-items: center; justify-content: center; z-index: 1000; color:white; }
+        .login-box { background: white; padding: 30px; border-radius: 10px; width: 300px; text-align: center; color: #333; }
+        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .admin-card { border: 1px solid #ccc; margin: 15px 0; padding: 15px; display: flex; align-items: flex-start; gap: 20px; background: #f9f9f9; border-radius: 8px; }
+        .admin-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+        .btn-valider { background: #2e7d32; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .btn-vendu { background: #003366; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .btn-supprimer { background: #d32f2f; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; }
+        #admin-content { display: none; padding: 20px; max-width: 900px; margin: auto; }
     </style>
 </head>
 <body>
@@ -26,20 +26,20 @@
         <h3>Accès Admin Babsy</h3>
         <input type="text" id="admin-user" placeholder="Identifiant">
         <input type="password" id="admin-pass" placeholder="Mot de passe">
-        <button onclick="verifierLogin()" style="width:100%; padding:10px; background:#ffc107; border:none; font-weight:bold; cursor:pointer;">Se connecter</button>
+        <button onclick="verifierLogin()" style="width:100%; padding:10px; background:#ffc107; border:none; font-weight:bold; cursor:pointer; border-radius:5px;">Se connecter</button>
     </div>
 </div>
 
 <div id="admin-content">
-    <header>
-        <h1>Tableau de Bord Nexa</h1>
-        <nav><a href="index.html" class="btn-nav">Retour au site</a></nav>
+    <header style="border-bottom: 2px solid #003366; margin-bottom: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <h1>Dashboard Nexa</h1>
+        <a href="index.html" style="text-decoration:none; color:#003366; font-weight:bold;">← Retour Site</a>
     </header>
 
-    <h2>Gestion des Annonces</h2>
+    <h2>📢 Annonces Déposées</h2>
     <div id="admin-list"></div>
 
-    <h2 style="margin-top:40px;">Modération des Avis</h2>
+    <h2 style="margin-top:50px;">💬 Modération des Avis</h2>
     <div id="admin-avis-list"></div>
 </div>
 
@@ -77,18 +77,21 @@
                 const id = doc.id;
                 const isValide = data.statut === "valide";
                 const estVendu = data.vendu === true;
-                const photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/80';
+                const photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/100';
+                const d = data.description || data.desc || "(Pas de description)";
 
                 list.innerHTML += `
-                    <div class="admin-card" style="border-left: 5px solid ${estVendu ? 'red' : (isValide ? 'green' : 'orange')}">
+                    <div class="admin-card" style="border-left: 6px solid ${estVendu ? 'red' : (isValide ? '#2e7d32' : '#ffc107')}">
                         <img src="${photo}">
                         <div style="flex-grow: 1;">
-                            <strong>${data.titre}</strong> ${estVendu ? '<span style="color:red;">[VENDU]</span>' : ''}<br>
-                            <small>${data.prix} FCFA</small>
+                            <strong style="font-size:1.1em;">${data.titre}</strong> ${estVendu ? '<b style="color:red;">[VENDU]</b>' : ''}<br>
+                            <span style="color:#d32f2f; font-weight:bold;">${data.prix} FCFA</span><br>
+                            <p style="font-size:0.85em; margin:5px 0;">${d}</p>
+                            <small>Contact : ${data.contact_vendeur || 'N/A'}</small>
                         </div>
-                        <div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
                             ${!isValide ? `<button class="btn-valider" onclick="majAnnonce('${id}', {statut:'valide'})">Valider</button>` : ''}
-                            ${(isValide && !estVendu) ? `<button class="btn-vendu" onclick="majAnnonce('${id}', {vendu:true})">Marquer Vendu</button>` : ''}
+                            ${(isValide && !estVendu) ? `<button class="btn-vendu" onclick="majAnnonce('${id}', {vendu:true})">Vendu</button>` : ''}
                             <button class="btn-supprimer" onclick="supprimerDoc('annonces', '${id}')">Supprimer</button>
                         </div>
                     </div>`;
@@ -106,10 +109,10 @@
                 list.innerHTML += `
                     <div class="admin-card">
                         <div style="flex-grow: 1;">
-                            <strong>${avis.nom}</strong>: ${avis.message}
+                            <strong>${avis.nom}</strong> : <span style="font-style:italic;">"${avis.message}"</span>
                         </div>
                         <div>
-                            ${!avis.valide ? `<button class="btn-valider" onclick="majAvis('${id}', {valide:true})">Approuver</button>` : ''}
+                            ${!avis.valide ? `<button class="btn-valider" onclick="majAvis('${id}', {valide:true})">Publier</button>` : ''}
                             <button class="btn-supprimer" onclick="supprimerDoc('temoignages', '${id}')">Supprimer</button>
                         </div>
                     </div>`;
@@ -117,9 +120,9 @@
         });
     }
 
-    function majAnnonce(id, data) { if(confirm("Confirmer la modification ?")) db.collection("annonces").doc(id).update(data); }
+    function majAnnonce(id, data) { if(confirm("Appliquer ce changement ?")) db.collection("annonces").doc(id).update(data); }
     function majAvis(id, data) { db.collection("temoignages").doc(id).update(data); }
-    function supprimerDoc(col, id) { if(confirm("Supprimer définitivement ?")) db.collection(col).doc(id).delete(); }
+    function supprimerDoc(col, id) { if(confirm("⚠️ Supprimer définitivement ?")) db.collection(col).doc(id).delete(); }
 </script>
 </body>
 </html>
