@@ -99,22 +99,34 @@
 
   // AVIS
   function envoyerAvis() {
-      const nom = document.getElementById('avis-nom').value;
-      const msg = document.getElementById('avis-message').value;
-      if (nom && msg) {
-          db.collection("temoignages").add({ nom, message: msg, date: new Date(), valide: false })
-            .then(() => { alert("Merci ! Votre avis sera publié après validation."); document.getElementById('avis-nom').value = ""; document.getElementById('avis-message').value = ""; });
-      }
-  }
+    const nomInput = document.getElementById('avis-nom');
+    const msgInput = document.getElementById('avis-message');
+    
+    const nom = nomInput.value.trim();
+    const msg = msgInput.value.trim();
 
-  db.collection("temoignages").where("valide", "==", true).orderBy("date", "desc").onSnapshot((snapshot) => {
-      const container = document.getElementById('avis-container');
-      container.innerHTML = "";
-      snapshot.forEach((doc) => {
-          const avis = doc.data();
-          container.innerHTML += `<div style="min-width: 250px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #003366;"><p style="font-style: italic;">"${avis.message}"</p><p style="font-weight: bold; color: #003366; margin-top: 10px;">- ${avis.nom}</p></div>`;
-      });
-  });
+    if (nom === "" || msg === "") {
+        alert("Veuillez remplir votre nom et votre message.");
+        return;
+    }
+
+    // On utilise la syntaxe compatible que tu as déjà initialisée
+    db.collection("temoignages").add({
+        nom: nom,
+        message: msg,
+        date: firebase.firestore.Timestamp.now(), // Utilise le format Firebase
+        valide: false // Pour que tu puisses valider dans l'admin avant affichage
+    })
+    .then(() => {
+        alert("Merci Babsy ! Ton avis a été envoyé et sera publié après validation.");
+        nomInput.value = "";
+        msgInput.value = "";
+    })
+    .catch((error) => {
+        console.error("Erreur lors de l'envoi de l'avis:", error);
+        alert("Oups ! Erreur lors de l'envoi. Vérifie ta connexion.");
+    });
+}
 
   function contactAdmin(titre) {
       window.open(`https://wa.me/2250151288644?text=${encodeURIComponent("Bonjour Babsy, je suis intéressé par : " + titre)}`);
