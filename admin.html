@@ -17,6 +17,7 @@
         .btn-vendu { background: #003366; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; font-weight: bold; }
         .btn-supprimer { background: #d32f2f; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; }
         #admin-content { display: none; padding: 20px; max-width: 900px; margin: auto; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -45,7 +46,7 @@
 
 <script>
     const MON_IDENTIFIANT = "BabsyAdmin"; 
-    const MON_MOT_DE_PASSE = "Babsycoul0833"; 
+    const MON_MOT_DE_PASSE = "Babsycoul0833";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
@@ -78,20 +79,20 @@
                 const isValide = data.statut === "valide";
                 const estVendu = data.vendu === true;
                 const photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/100';
-                const d = data.description || data.desc || "(Pas de description)";
-
+                
                 list.innerHTML += `
                     <div class="admin-card" style="border-left: 6px solid ${estVendu ? 'red' : (isValide ? '#2e7d32' : '#ffc107')}">
                         <img src="${photo}">
                         <div style="flex-grow: 1;">
-                            <strong style="font-size:1.1em;">${data.titre}</strong> ${estVendu ? '<b style="color:red;">[VENDU]</b>' : ''}<br>
+                            <strong>${data.titre}</strong> ${estVendu ? '<b style="color:red;">[VENDU]</b>' : ''}<br>
                             <span style="color:#d32f2f; font-weight:bold;">${data.prix} FCFA</span><br>
-                            <p style="font-size:0.85em; margin:5px 0;">${d}</p>
-                            <small>Contact : ${data.contact_vendeur || 'N/A'}</small>
+                            <p style="font-size:0.85em; margin:5px 0;">${data.description || data.desc || ""}</p>
+                            <small>Contact : ${data.contact_vendeur || 'N/A'}</small><br>
+                            <small>Rôle : <b>${data.type_vendeur || 'Non spécifié'}</b></small>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:5px;">
                             ${!isValide ? `<button class="btn-valider" onclick="majAnnonce('${id}', {statut:'valide'})">Valider</button>` : ''}
-                            ${(isValide && !estVendu) ? `<button class="btn-vendu" onclick="majAnnonce('${id}', {vendu:true})">Vendu</button>` : ''}
+                            ${(isValide && !estVendu) ? `<button class="btn-vendu" onclick="majAnnonce('${id}', {vendu:true})">Marquer Vendu</button>` : ''}
                             <button class="btn-supprimer" onclick="supprimerDoc('annonces', '${id}')">Supprimer</button>
                         </div>
                     </div>`;
@@ -106,13 +107,19 @@
             snapshot.forEach((doc) => {
                 const avis = doc.data();
                 const id = doc.id;
+                const estPublie = avis.valide === true;
+
                 list.innerHTML += `
-                    <div class="admin-card">
+                    <div class="admin-card" style="border-left: 6px solid ${estPublie ? '#2e7d32' : '#ffc107'}">
                         <div style="flex-grow: 1;">
-                            <strong>${avis.nom}</strong> : <span style="font-style:italic;">"${avis.message}"</span>
+                            <strong>${avis.nom}</strong> 
+                            <span class="status-badge" style="background:${estPublie ? '#e8f5e9' : '#fff9c4'}; color:${estPublie ? '#2e7d32' : '#fbc02d'};">
+                                ${estPublie ? 'En ligne' : 'En attente'}
+                            </span><br>
+                            <p style="font-style:italic; margin-top:5px;">"${avis.message}"</p>
                         </div>
-                        <div>
-                            ${!avis.valide ? `<button class="btn-valider" onclick="majAvis('${id}', {valide:true})">Publier</button>` : ''}
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            ${!estPublie ? `<button class="btn-valider" onclick="majAvis('${id}', {valide:true})">Publier</button>` : ''}
                             <button class="btn-supprimer" onclick="supprimerDoc('temoignages', '${id}')">Supprimer</button>
                         </div>
                     </div>`;
@@ -120,9 +127,15 @@
         });
     }
 
-    function majAnnonce(id, data) { if(confirm("Appliquer ce changement ?")) db.collection("annonces").doc(id).update(data); }
-    function majAvis(id, data) { db.collection("temoignages").doc(id).update(data); }
-    function supprimerDoc(col, id) { if(confirm("⚠️ Supprimer définitivement ?")) db.collection(col).doc(id).delete(); }
+    function majAnnonce(id, data) { if(confirm("Confirmer la modification ?")) db.collection("annonces").doc(id).update(data); }
+    
+    function majAvis(id, data) { 
+        if(confirm("Rendre cet avis visible sur la page d'accueil ?")) {
+            db.collection("temoignages").doc(id).update(data); 
+        }
+    }
+
+    function supprimerDoc(col, id) { if(confirm("Supprimer définitivement ?")) db.collection(col).doc(id).delete(); }
 </script>
 </body>
 </html>
