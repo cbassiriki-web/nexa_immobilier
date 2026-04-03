@@ -33,6 +33,13 @@
             <label>Joindre des images ou vidéos (Max 3)</label>
             <input type="file" id="fichiers" accept="image/*,video/*" multiple style="margin-bottom: 20px; border: 1px dashed var(--bleu-nexa); padding: 10px; width: 100%;">
             
+            <label style="font-weight: bold; color: #003366;">Vous êtes :</label>
+            <select id="statut_publieur" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; background: white; margin-bottom: 20px;" required>
+                <option value="" disabled selected>Choisissez votre statut...</option>
+                <option value="Propriétaire">Propriétaire (C'est mon terrain)</option>
+                <option value="Démarcheur">Démarcheur (Intermédiaire)</option>
+            </select>
+
             <label>Votre Contact WhatsApp (Masqué au public)</label>
             <input type="text" id="vendeur_contact" placeholder="Pour que Babsy vous contacte" required>
 
@@ -42,12 +49,10 @@
 </div>
 
 <script type="module">
-  // 1. Importations des modules (Version 10+ recommandée pour la stabilité)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-  // 2. Ta NOUVELLE configuration Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyDY92WJbHCJ4P50orqd59tXJ5CuvZhLCIk",
     authDomain: "nexa-immobilier-acd8f.firebaseapp.com",
@@ -58,20 +63,18 @@
     measurementId: "G-86LFE1EG8S"
   };
 
-  // 3. Initialisation
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  // 4. Logique du formulaire
   document.getElementById("formVendeur").addEventListener("submit", async function(e) {
       e.preventDefault();
       
       const btn = document.getElementById("submitBtn");
       const description = document.getElementById("desc").value;
       const fichiers = document.getElementById("fichiers").files;
+      const statutPublieur = document.getElementById("statut_publieur").value; // RECUPERATION ICI
 
-      // Sécurité anti-numéro
       if (/\d{8,}/.test(description)) {
           alert("⚠️ Sécurité NEXA : Veuillez retirer votre numéro de téléphone de la description.");
           return;
@@ -83,7 +86,6 @@
       let urlsMedias = [];
 
       try {
-          // Upload des fichiers
           for (let i = 0; i < fichiers.length; i++) {
               const file = fichiers[i];
               const storageRef = ref(storage, 'annonces/' + Date.now() + "_" + file.name);
@@ -94,18 +96,17 @@
 
           btn.innerText = "Enregistrement de l'annonce...";
 
-          // Enregistrement Firestore
           await addDoc(collection(db, "annonces"), {
               titre: document.getElementById("titre").value,
               description: description,
               prix: document.getElementById("prix").value,
               contact_vendeur: document.getElementById("vendeur_contact").value,
+              type_vendeur: statutPublieur, // ENREGISTREMENT ICI
               images: urlsMedias,
               statut: "en_attente",
               date: new Date().toISOString()
           });
 
-          // Succès
           document.getElementById("form-container").innerHTML = `
               <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid var(--or-nexa);">
                   <h1 style="color:green;">✅ Reçu !</h1>
