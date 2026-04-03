@@ -66,14 +66,13 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // CHARGEMENT DES ANNONCES (Correction Description ici)
+  // --- CHARGEMENT DES ANNONCES ---
   db.collection("annonces").where("statut", "==", "valide").onSnapshot((snapshot) => {
       const grid = document.getElementById("annonces-grid");
       grid.innerHTML = "";
       snapshot.forEach((doc) => {
           const data = doc.data();
           const estVendu = data.vendu === true;
-          // Sécurité : récupère 'description' ou 'desc'
           const texteDescription = data.description || data.desc || "Consultez-nous pour plus de détails sur cette offre.";
           let photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/400x250';
 
@@ -97,22 +96,36 @@
       });
   });
 
-  // AVIS
- // 1. Charger et afficher les avis validés
-  db.collection("temoignages").where("valide", "==", true).orderBy("date", "desc").onSnapshot((snapshot) => {
+  // --- CHARGEMENT DES AVIS VALIDÉS (Correction Index effectuée ici) ---
+  db.collection("temoignages").where("valide", "==", true).onSnapshot((snapshot) => {
       const container = document.getElementById('avis-container');
+      if (!container) return;
+      
       container.innerHTML = "";
+      
+      if (snapshot.empty) {
+          container.innerHTML = "<p style='color:gray; text-align:center; width:100%;'>Les premiers témoignages arrivent bientôt !</p>";
+          return;
+      }
+
       snapshot.forEach((doc) => {
           const avis = doc.data();
           container.innerHTML += `
-            <div style="min-width: 250px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #003366;">
-                <p style="font-style: italic;">"${avis.message}"</p>
-                <p style="font-weight: bold; color: #003366; margin-top: 10px;">- ${avis.nom}</p>
+            <div style="min-width: 280px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #003366; margin: 10px;">
+                <p style="font-style: italic; color: #555; line-height: 1.6;">"${avis.message}"</p>
+                <p style="font-weight: bold; color: #003366; margin-top: 15px; display: flex; align-items: center;">
+                    <span style="background: #003366; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin-right: 10px; font-size: 0.8em;">
+                        ${avis.nom ? avis.nom.charAt(0).toUpperCase() : 'N'}
+                    </span>
+                    ${avis.nom}
+                </p>
             </div>`;
       });
-  }); // <--- Il manquait cette fermeture !
+  }, (error) => {
+      console.error("Erreur Firestore Avis:", error);
+  });
 
-  // 2. Envoyer un nouvel avis
+  // --- FONCTION ENVOYER AVIS ---
   function envoyerAvis() {
     const nomInput = document.getElementById('avis-nom');
     const msgInput = document.getElementById('avis-message');
@@ -128,7 +141,7 @@
     db.collection("temoignages").add({
         nom: nom,
         message: msg,
-        date: firebase.firestore.Timestamp.now(),
+        date: new Date(), // Utilisation de new Date() pour plus de simplicité
         valide: false 
     })
     .then(() => {
@@ -137,26 +150,23 @@
         msgInput.value = "";
     })
     .catch((error) => {
-        console.error("Erreur:", error);
+        console.error("Erreur lors de l'envoi:", error);
         alert("Erreur lors de l'envoi.");
     });
   }
+
   function contactAdmin(titre) {
       window.open(`https://wa.me/2250151288644?text=${encodeURIComponent("Bonjour Babsy, je suis intéressé par : " + titre)}`);
   }
+
   document.getElementById("currentYear").textContent = new Date().getFullYear();
 
-   window.addEventListener('load', () => {
+  window.addEventListener('load', () => {
     const v = document.getElementById('avatarVideo');
     const h = document.getElementById('play-hint');
 
     if (v) {
-        // Tentative de lecture auto
-        v.play().catch(() => {
-            console.log("Lecture auto en attente d'interaction");
-        });
-
-        // Gestion du clic pour le son
+        v.play().catch(() => console.log("Lecture auto bloquée"));
         v.addEventListener('click', () => {
             if (v.muted) {
                 v.muted = false;
@@ -170,7 +180,7 @@
             }
         });
     }
-});
+  });
 </script>
 
 <style>
@@ -178,6 +188,8 @@
   .card { border: 1px solid #ddd; border-radius: 10px; background: #fff; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
   .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
   .card-content { padding: 20px; }
+  #avis-container::-webkit-scrollbar { height: 8px; }
+  #avis-container::-webkit-scrollbar-thumb { background: #003366; border-radius: 10px; }
 </style>
 </body>
 </html>
