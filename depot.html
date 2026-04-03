@@ -19,7 +19,7 @@
 <div class="container">
     <div id="form-container">
         <form id="formVendeur">
-            <h2 style="color: var(--bleu-nexa)">Déposer votre annonce</h2>
+            <h2 style="color: #003366">Déposer votre annonce</h2>
             
             <label>Titre de l'annonce</label>
             <input type="text" id="titre" placeholder="ex: Terrain 500m² à Zatta" required>
@@ -31,7 +31,7 @@
             <input type="number" id="prix" required>
 
             <label>Joindre des images ou vidéos (Max 3)</label>
-            <input type="file" id="fichiers" accept="image/*,video/*" multiple style="margin-bottom: 20px; border: 1px dashed var(--bleu-nexa); padding: 10px; width: 100%;">
+            <input type="file" id="fichiers" accept="image/*,video/*" multiple style="margin-bottom: 20px; border: 1px dashed #003366; padding: 10px; width: 100%;">
             
             <label style="font-weight: bold; color: #003366;">Vous êtes :</label>
             <select id="statut_publieur" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; background: white; margin-bottom: 20px;" required>
@@ -43,7 +43,7 @@
             <label>Votre Contact WhatsApp (Masqué au public)</label>
             <input type="text" id="vendeur_contact" placeholder="Pour que Babsy vous contacte" required>
 
-            <button type="submit" id="submitBtn" class="btn-contact">Soumettre pour validation</button>
+            <button type="submit" id="submitBtn" class="btn-contact" style="background: #003366; color: white; padding: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">Soumettre pour validation</button>
         </form>
     </div>
 </div>
@@ -71,56 +71,68 @@
       e.preventDefault();
       
       const btn = document.getElementById("submitBtn");
+      const titre = document.getElementById("titre").value;
       const description = document.getElementById("desc").value;
+      const prix = document.getElementById("prix").value;
+      const contact = document.getElementById("vendeur_contact").value;
+      const statutPublieur = document.getElementById("statut_publieur").value;
       const fichiers = document.getElementById("fichiers").files;
-      const statutPublieur = document.getElementById("statut_publieur").value; // RECUPERATION ICI
 
+      // 1. Sécurité anti-numéro
       if (/\d{8,}/.test(description)) {
           alert("⚠️ Sécurité NEXA : Veuillez retirer votre numéro de téléphone de la description.");
           return;
       }
 
+      // 2. Bloquer le bouton
       btn.disabled = true;
       btn.innerText = "Téléchargement des médias...";
 
       let urlsMedias = [];
 
       try {
-          for (let i = 0; i < fichiers.length; i++) {
-              const file = fichiers[i];
-              const storageRef = ref(storage, 'annonces/' + Date.now() + "_" + file.name);
-              const snapshot = await uploadBytes(storageRef, file);
-              const url = await getDownloadURL(snapshot.ref);
-              urlsMedias.push(url);
+          // 3. Upload des images seulement s'il y en a
+          if (fichiers.length > 0) {
+              for (let i = 0; i < fichiers.length; i++) {
+                  const file = fichiers[i];
+                  const storageRef = ref(storage, 'annonces/' + Date.now() + "_" + file.name);
+                  const snapshot = await uploadBytes(storageRef, file);
+                  const url = await getDownloadURL(snapshot.ref);
+                  urlsMedias.push(url);
+              }
           }
 
           btn.innerText = "Enregistrement de l'annonce...";
 
+          // 4. Envoi final à Firestore
           await addDoc(collection(db, "annonces"), {
-              titre: document.getElementById("titre").value,
+              titre: titre,
               description: description,
-              prix: document.getElementById("prix").value,
-              contact_vendeur: document.getElementById("vendeur_contact").value,
-              type_vendeur: statutPublieur, // ENREGISTREMENT ICI
+              prix: prix,
+              contact_vendeur: contact,
+              type_vendeur: statutPublieur,
               images: urlsMedias,
               statut: "en_attente",
+              vendu: false,
               date: new Date().toISOString()
           });
 
+          // 5. Message de succès
           document.getElementById("form-container").innerHTML = `
-              <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid var(--or-nexa);">
+              <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid #ffc107;">
                   <h1 style="color:green;">✅ Reçu !</h1>
-                  <p>Votre annonce est en cours de validation par l'équipe Nexa.</p>
-                  <br><a href="index.html" class="btn-contact" style="text-decoration:none;">Retour à l'accueil</a>
+                  <p>Votre annonce est en cours de validation par Babsy.</p>
+                  <br><a href="index.html" style="background:#003366; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">Retour à l'accueil</a>
               </div>`;
 
       } catch (error) {
-          console.error(error);
-          alert("Erreur : " + error.message);
+          console.error("Erreur détaillée:", error);
+          alert("Désolé Babsy, il y a une erreur : " + error.message);
           btn.disabled = false;
           btn.innerText = "Soumettre pour validation";
       }
   });
 </script>
+
 </body>
 </html>
