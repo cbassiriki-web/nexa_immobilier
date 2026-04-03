@@ -98,6 +98,21 @@
   });
 
   // AVIS
+ // 1. Charger et afficher les avis validés
+  db.collection("temoignages").where("valide", "==", true).orderBy("date", "desc").onSnapshot((snapshot) => {
+      const container = document.getElementById('avis-container');
+      container.innerHTML = "";
+      snapshot.forEach((doc) => {
+          const avis = doc.data();
+          container.innerHTML += `
+            <div style="min-width: 250px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #003366;">
+                <p style="font-style: italic;">"${avis.message}"</p>
+                <p style="font-weight: bold; color: #003366; margin-top: 10px;">- ${avis.nom}</p>
+            </div>`;
+      });
+  }); // <--- Il manquait cette fermeture !
+
+  // 2. Envoyer un nouvel avis
   function envoyerAvis() {
     const nomInput = document.getElementById('avis-nom');
     const msgInput = document.getElementById('avis-message');
@@ -110,24 +125,22 @@
         return;
     }
 
-    // On utilise la syntaxe compatible que tu as déjà initialisée
     db.collection("temoignages").add({
         nom: nom,
         message: msg,
-        date: firebase.firestore.Timestamp.now(), // Utilise le format Firebase
-        valide: false // Pour que tu puisses valider dans l'admin avant affichage
+        date: firebase.firestore.Timestamp.now(),
+        valide: false 
     })
     .then(() => {
-        alert("Merci Babsy ! Ton avis a été envoyé et sera publié après validation.");
+        alert("Merci ! Ton avis a été envoyé et sera publié après validation.");
         nomInput.value = "";
         msgInput.value = "";
     })
     .catch((error) => {
-        console.error("Erreur lors de l'envoi de l'avis:", error);
-        alert("Oups ! Erreur lors de l'envoi. Vérifie ta connexion.");
+        console.error("Erreur:", error);
+        alert("Erreur lors de l'envoi.");
     });
-}
-
+  }
   function contactAdmin(titre) {
       window.open(`https://wa.me/2250151288644?text=${encodeURIComponent("Bonjour Babsy, je suis intéressé par : " + titre)}`);
   }
