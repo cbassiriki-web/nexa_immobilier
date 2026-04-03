@@ -1,33 +1,36 @@
-/* style.css */
+/* --- VARIABLES DE COULEURS NEXA --- */
 :root {
     --bleu-nexa: #0A2472;
     --beige-nexa: #F0E6A2;
     --or-nexa: #d4af37;
     --blanc: #ffffff;
     --noir: #1a1a1a;
+    --gris-clair: #f4f4f4;
+    --rouge-alerte: #d32f2f;
+    --vert-succes: #2e7d32;
 }
 
+/* --- BASE & FOND D'ÉCRAN --- */
 body {
-    /* L'image est centrée, fixe et couvre tout l'écran */
-    /* Remplace 'background.jpg' par le nom exact de ton fichier image */
-    background: linear-gradient(rgba(240, 230, 162, 0.7), rgba(240, 230, 162, 0.7)), 
+    background: linear-gradient(rgba(240, 230, 162, 0.8), rgba(240, 230, 162, 0.8)), 
                 url('image1.jpeg') no-repeat center center fixed;
     background-size: cover;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     color: var(--noir);
+    line-height: 1.6;
 }
 
+/* --- HEADER & NAVIGATION --- */
 header {
     background-color: var(--bleu-nexa);
     color: var(--blanc);
-    padding: 25px 10px;
+    padding: 30px 15px;
     text-align: center;
     border-bottom: 5px solid var(--or-nexa);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* Style pour le logo */
 .logo-container img {
     display: block;
     margin: 0 auto 15px;
@@ -35,18 +38,14 @@ header {
     height: auto;
 }
 
-header h1 { margin: 0; letter-spacing: 2px; font-size: 2.2em; }
-header p { margin: 5px 0 15px; font-weight: 300; font-style: italic; }
-
-nav {
-    margin-top: 15px;
-}
+header h1 { margin: 0; letter-spacing: 2px; font-size: 2.2em; text-transform: uppercase; }
+header p { margin: 5px 0 20px; font-weight: 300; font-style: italic; color: var(--beige-nexa); }
 
 nav a {
     color: var(--or-nexa);
     text-decoration: none;
     font-weight: bold;
-    margin: 0 10px;
+    margin: 5px;
     border: 2px solid var(--or-nexa);
     padding: 10px 20px;
     border-radius: 5px;
@@ -59,12 +58,12 @@ nav a:hover {
     color: var(--bleu-nexa); 
 }
 
-/* Style spécifique pour le bouton Admin pour le différencier */
 .admin-btn {
     background-color: var(--or-nexa);
     color: var(--bleu-nexa) !important;
 }
 
+/* --- GRILLE D'ANNONCES --- */
 .container { 
     padding: 30px; 
     max-width: 1200px; 
@@ -73,29 +72,73 @@ nav a:hover {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
 }
 
 .card {
-    background: var(--bleu-nexa);
-    color: var(--blanc);
+    background: white; /* Fond blanc pour que le texte soit lisible */
+    color: var(--noir);
     border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.3s;
-    border: 2px solid var(--or-nexa);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* Plus d'ombre pour ressortir du fond */
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.card:hover { transform: translateY(-10px); }
-.card img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
+.card:hover { 
+    transform: translateY(-10px); 
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+.card img { width: 100%; height: 220px; object-fit: cover; }
+
 .card-content { padding: 20px; }
-.card-content h3 { margin: 0 0 10px; color: var(--or-nexa); }
-.card-content .price { font-size: 1.4em; font-weight: bold; margin-bottom: 15px; }
+.card-content h3 { margin: 0 0 10px; color: var(--bleu-nexa); font-size: 1.3em; }
+.card-content .prix { 
+    color: var(--rouge-alerte); 
+    font-size: 1.4em; 
+    font-weight: bold; 
+    margin-bottom: 15px; 
+}
+
+/* --- SECTION TÉMOIGNAGES --- */
+#avis-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bleu-nexa) transparent;
+}
+
+#avis-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+#avis-container::-webkit-scrollbar-thumb {
+    background: var(--bleu-nexa);
+    border-radius: 10px;
+}
+
+/* --- FORMULAIRES --- */
+form { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 10px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+form label { font-weight: bold; color: var(--bleu-nexa); display: block; margin-top: 10px; }
+
+form input, form textarea, form select {
+    width: 100%; padding: 12px; margin: 8px 0 15px;
+    border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
+    font-size: 1em;
+}
 
 .btn-contact {
-    background-color: var(--or-nexa);
-    color: var(--bleu-nexa);
+    background-color: var(--bleu-nexa);
+    color: white;
     border: none;
     padding: 15px;
     width: 100%;
@@ -103,17 +146,23 @@ nav a:hover {
     cursor: pointer;
     border-radius: 6px;
     text-transform: uppercase;
-    font-size: 1em;
+    transition: 0.3s;
 }
 
-form { 
-    background: white; 
-    padding: 30px; 
-    border-radius: 10px; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+.btn-contact:hover {
+    background-color: var(--or-nexa);
+    color: var(--bleu-nexa);
 }
 
-form input, form textarea {
-    width: 100%; padding: 12px; margin: 10px 0 20px;
-    border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+/* --- FOOTER --- */
+footer a:hover {
+    color: var(--or-nexa) !important;
+    text-decoration: underline !important;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 600px) {
+    header h1 { font-size: 1.6em; }
+    .container { padding: 15px; }
+    .grid { grid-template-columns: 1fr; }
 }
