@@ -78,6 +78,10 @@
           const data = doc.data();
           const estVendu = data.vendu === true;
           const texteDescription = data.description || data.desc || "Consultez-nous pour plus de détails sur cette offre.";
+          
+          // Récupération de la ville (avec valeur par défaut si vide)
+          const villeAnnonce = data.ville || "Côte d'Ivoire"; 
+          
           let photo = (data.images && data.images.length > 0) ? data.images[0] : 'https://via.placeholder.com/400x250';
 
           grid.innerHTML += `
@@ -88,6 +92,11 @@
                   </div>
                   <div class="card-content">
                       <h3 style="color: #003366; margin-bottom: 5px;">${data.titre}</h3>
+                      
+                      <div style="font-size: 0.85em; color: #003366; margin-bottom: 8px; display: flex; align-items: center; font-weight: bold;">
+                          <span style="margin-right: 5px;">📍</span> ${villeAnnonce}
+                      </div>
+
                       <div style="color: #d32f2f; font-weight: bold; font-size: 1.1em; margin-bottom: 10px;">${data.prix} FCFA</div>
                       <p style="font-size: 0.9em; color: #555; line-height: 1.4; margin-bottom: 15px;">${texteDescription}</p>
                       <button onclick="${estVendu ? '' : `contactAdmin('${data.titre}')`}" 
@@ -100,7 +109,7 @@
       });
   });
 
-  // --- CHARGEMENT DES AVIS VALIDÉS (Correction Index effectuée ici) ---
+  // --- CHARGEMENT DES AVIS VALIDÉS ---
   db.collection("temoignages").where("valide", "==", true).onSnapshot((snapshot) => {
       const container = document.getElementById('avis-container');
       if (!container) return;
@@ -145,7 +154,7 @@
     db.collection("temoignages").add({
         nom: nom,
         message: msg,
-        date: new Date(), // Utilisation de new Date() pour plus de simplicité
+        date: new Date(),
         valide: false 
     })
     .then(() => {
