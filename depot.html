@@ -24,6 +24,19 @@
             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Titre de l'annonce</label>
             <input type="text" id="titre" placeholder="ex: Terrain 500m² à Zatta" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required>
             
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Ville / Localisation</label>
+            <select id="ville" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; background: white; margin-bottom: 20px;" required>
+                <option value="" disabled selected>Sélectionnez la ville...</option>
+                <option value="Abidjan">Abidjan</option>
+                <option value="Yamoussoukro">Yamoussoukro</option>
+                <option value="Bouaké">Bouaké</option>
+                <option value="San-Pédro">San-Pédro</option>
+                <option value="Korhogo">Korhogo</option>
+                <option value="Daloa">Daloa</option>
+                <option value="Toumodi">Toumodi</option>
+                <option value="Autre">Autre (Préciser en description)</option>
+            </select>
+
             <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description (Sans numéro de téléphone)</label>
             <textarea id="desc" placeholder="Détails du bien (maison, terrain, véhicule...)" rows="5" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;" required></textarea>
             
@@ -53,7 +66,6 @@
   import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-  // --- CONFIGURATION CORRIGÉE (Identique à index.html) ---
   const firebaseConfig = {
     apiKey: "AIzaSyAbEaaPhzId0T7dkFM-wJ1sOrMVgWNobyQ",
     authDomain: "nexa-immobilier-acd8f.firebaseapp.com",
@@ -72,26 +84,24 @@
       
       const btn = document.getElementById("submitBtn");
       const titre = document.getElementById("titre").value;
+      const ville = document.getElementById("ville").value; // Récupération de la ville
       const description = document.getElementById("desc").value;
       const prix = document.getElementById("prix").value;
       const contact = document.getElementById("vendeur_contact").value;
       const statutPublieur = document.getElementById("statut_publieur").value;
       const fichiers = document.getElementById("fichiers").files;
 
-      // 1. Sécurité anti-numéro (Vérifie s'il y a 8 chiffres ou plus)
       if (/\d{8,}/.test(description)) {
           alert("⚠️ Sécurité NEXA : Veuillez retirer votre numéro de téléphone de la description pour protéger votre vie privée.");
           return;
       }
 
-      // 2. Bloquer le bouton pour éviter les doubles envois
       btn.disabled = true;
       btn.innerText = "Traitement en cours...";
 
       let urlsMedias = [];
 
       try {
-          // 3. Upload des images
           if (fichiers.length > 0) {
               btn.innerText = "Téléchargement des images...";
               for (let i = 0; i < Math.min(fichiers.length, 3); i++) {
@@ -105,9 +115,9 @@
 
           btn.innerText = "Publication finale...";
 
-          // 4. Envoi à la collection "annonces"
           await addDoc(collection(db, "annonces"), {
               titre: titre,
+              ville: ville, // Enregistrement de la ville dans Firestore
               description: description,
               prix: prix,
               contact_vendeur: contact,
@@ -115,10 +125,9 @@
               images: urlsMedias,
               statut: "en_attente",
               vendu: false,
-              date: serverTimestamp() // Utilise l'heure du serveur pour plus de précision
+              date: serverTimestamp()
           });
 
-          // 5. Message de succès
           document.getElementById("form-container").innerHTML = `
               <div style="text-align:center; padding:40px; background:white; border-radius:10px; border: 2px solid #28a745;">
                   <h1 style="color:#28a745;">✅ Reçu !</h1>
